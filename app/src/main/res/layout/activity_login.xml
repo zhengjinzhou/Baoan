@@ -6,10 +6,10 @@
     android:background="@drawable/login_bg"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:fitsSystemWindows="true"
-    android:paddingTop="?attr/actionBarSize">
+    android:fitsSystemWindows="true">
 
     <ImageView
+        android:paddingTop="?attr/actionBarSize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/login_logo" />

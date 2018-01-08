@@ -1,4 +1,5 @@
 package com.zhou.baoan.view;
+import android.graphics.Color;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
@@ -51,6 +52,12 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     public void init() {
+        if(Build.VERSION.SDK_INT >= 21){
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    |View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
+
         initCheckBox();
         initInfo();
     }
