@@ -155,19 +155,19 @@ public class MainActivity extends BaseActivity {
     }
 
     /**
-     * 弹出框
+     * 弹出框 知识中心
      */
     private void showPopupCenter() {
         View contentView = LayoutInflater.from(this).inflate(R.layout.pop_center, null);
         final PopupWindow pop = new PopupWindow(contentView,
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-        pop.setContentView(contentView);
-        pop.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
-        pop.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+
         pop.setBackgroundDrawable(new BitmapDrawable());
         pop.setOutsideTouchable(true);
         pop.setAnimationStyle(R.anim.mypop_anim);
-        pop.showAsDropDown(tv_center, Gravity.TOP, 10);
+        //pop.showAsDropDown(tv_center, Gravity.TOP, 0);
+        pop.showAtLocation(tv_sum,Gravity.BOTTOM,tv_sum.getWidth()*2,tv_center.getWidth());
+
         //内部资料
         contentView.findViewById(R.id.tv_reference_private).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -213,7 +213,7 @@ public class MainActivity extends BaseActivity {
     }
 
     /**
-     * 弹出框
+     * 弹出框 统计报表
      */
     private void showPopupSum() {
         View contentView = LayoutInflater.from(this).inflate(R.layout.pop_sum, null);
@@ -225,7 +225,7 @@ public class MainActivity extends BaseActivity {
         pop.setBackgroundDrawable(new BitmapDrawable());
         pop.setOutsideTouchable(true);
         pop.setAnimationStyle(R.anim.mypop_anim);
-        pop.showAsDropDown(tv_sum, Gravity.TOP, 10);
+        pop.showAtLocation(tv_center,Gravity.BOTTOM,tv_center.getHeight(),tv_center.getWidth());
         //按项目状态
         contentView.findViewById(R.id.tv_pro_stat).setOnClickListener(new View.OnClickListener() {
             @Override
