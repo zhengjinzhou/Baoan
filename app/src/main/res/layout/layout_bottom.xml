@@ -16,7 +16,7 @@
         android:paddingTop="4dp"
         android:text="首页"
         android:textColor="@color/txt_1"
-        android:textSize="18sp" />
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/tv_map"
@@ -28,9 +28,9 @@
         android:drawableTop="@drawable/map_off"
         android:gravity="center"
         android:paddingTop="4dp"
-        android:text="项目"
+        android:text="项目地图"
         android:textColor="@color/txt_1"
-        android:textSize="18sp" />
+        android:textSize="15sp" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -55,7 +55,7 @@
                 android:paddingTop="4dp"
                 android:text="统计报表"
                 android:textColor="@color/txt_1"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
 
         </RelativeLayout>
     </LinearLayout>
@@ -82,7 +82,7 @@
                 android:paddingTop="4dp"
                 android:text="知识中心"
                 android:textColor="@color/txt_1"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
 
         </RelativeLayout>
     </LinearLayout>

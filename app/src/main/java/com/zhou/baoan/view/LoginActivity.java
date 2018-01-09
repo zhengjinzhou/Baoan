@@ -52,6 +52,7 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     public void init() {
+        //Android5.0以上状态栏颜色修改
         if(Build.VERSION.SDK_INT >= 21){
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     |View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
@@ -88,7 +89,7 @@ public class LoginActivity extends BaseActivity {
             etUser = userBean.getUser();
             etPsd = userBean.getPsd();
             FirstLogin(userBean);
-
+            return;
         }
         if (userBean != null && userBean.isRemember()){
             cb_remember.setChecked(userBean.isRemember());

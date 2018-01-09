@@ -1,5 +1,7 @@
 package com.zhou.baoan.view;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
@@ -77,7 +79,6 @@ public class MainActivity extends BaseActivity {
     private void initWeb() {
         String new_url = getIntent().getStringExtra(Constant.NEW_URL);
         Log.d(TAG, "initWeb: "+new_url);
-
         webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setJavaScriptEnabled(true);//加载JavaScript
@@ -97,9 +98,12 @@ public class MainActivity extends BaseActivity {
         tv_index.setCompoundDrawables(null, img, null, null); //设置左图标
     }
 
-    @OnClick({R.id.tv_sum, R.id.tv_index, R.id.tv_map, R.id.tv_center})
+    @OnClick({R.id.tv_sum, R.id.tv_index, R.id.tv_map, R.id.tv_center,R.id.iv_login})
     void onClick(View view) {
         switch (view.getId()) {
+            case R.id.iv_login:
+                newDialog();
+                break;
             case R.id.tv_index:
                 //startActivity(WebActivity.newIntent(this, "http://121.15.203.82:9210/WAN_MPDA_Pic/PageMain/ProjectList.aspx"));
                 ToastUtil.show(getApplicationContext(), "当前为首页");
@@ -119,51 +123,35 @@ public class MainActivity extends BaseActivity {
     }
 
     /**
+     * 退出与切换账号
+     */
+    private void newDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog dialog = builder.create();
+        View inflate = LayoutInflater.from(this).inflate(R.layout.dialog_new, null);
+        dialog.setView(inflate,0,0,0,0);
+        dialog.show();
+        inflate.findViewById(R.id.tv_signout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        inflate.findViewById(R.id.tv_change).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SpUtil.clear();
+                startToActivity(LoginActivity.class);
+                finish();
+            }
+        });
+    }
+
+    /**
      * 弹出框  项目
      */
     private void showPopupProject() {
-        View contentView = LayoutInflater.from(this).inflate(R.layout.pop_project, null);
-        final PopupWindow pop = new PopupWindow(contentView,
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-        pop.setContentView(contentView);
-        pop.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
-        pop.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        pop.setBackgroundDrawable(new BitmapDrawable());
-        pop.setOutsideTouchable(true);
-        pop.setAnimationStyle(R.anim.mypop_anim);
-        pop.showAsDropDown(tv_map, Gravity.TOP, 10);
-        //通讯录
-        contentView.findViewById(R.id.tv_contact).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TwoLogin(brief_url[12]);
-                pop.dismiss();
-            }
-        });
-        //项目信息
-        contentView.findViewById(R.id.tv_inft).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TwoLogin(brief_url[0]);
-                pop.dismiss();
-            }
-        });
-        //项目文件信息
-        contentView.findViewById(R.id.tv_doc).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TwoLogin(brief_url[14]);
-                pop.dismiss();
-            }
-        });
-        //项目照片信息
-        contentView.findViewById(R.id.tv_picinfo).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TwoLogin(brief_url[15]);
-                pop.dismiss();
-            }
-        });
+        TwoLogin(brief_url[0]);
     }
 
     /**

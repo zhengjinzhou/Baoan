@@ -30,6 +30,15 @@
                 android:text="@string/head_title"
                 android:textColor="#fff"
                 android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/iv_login"
+                android:layout_marginRight="16dp"
+                android:src="@drawable/login"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
         </RelativeLayout>
     </android.support.design.widget.AppBarLayout>
 
