@@ -33,6 +33,7 @@
         android:textSize="15sp" />
 
     <LinearLayout
+        android:id="@+id/ll"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginRight="0.5dp"

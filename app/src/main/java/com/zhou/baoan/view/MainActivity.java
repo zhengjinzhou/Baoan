@@ -18,6 +18,7 @@ import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -53,6 +54,7 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.tv_sum) TextView tv_sum;
     @BindView(R.id.tv_center) TextView tv_center;
     @BindView(R.id.webView) WebView webView;
+    @BindView(R.id.ll) LinearLayout ll;
 
     private String websession;
     private String[] brief_url;
@@ -65,6 +67,12 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void init() {
+        //判断
+        String isok = SpUtil.getString(MainActivity.this, "isok", "");
+        if (isok.equals("ok")){
+            tv_map.setVisibility(View.GONE);
+            ll.setVisibility(View.GONE);
+        }
         initWeb();
         initBottom();
         brief_url = getResources().getStringArray(R.array.brief_url);
@@ -106,7 +114,11 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.tv_index:
                 //startActivity(WebActivity.newIntent(this, "http://121.15.203.82:9210/WAN_MPDA_Pic/PageMain/ProjectList.aspx"));
-                ToastUtil.show(getApplicationContext(), "当前为首页");
+                for (int i=0;i<20;i++){
+                    if (webView.canGoBack()){
+                        webView.goBack();
+                    }
+                }
                 break;
             case R.id.tv_map:
                 showPopupProject();

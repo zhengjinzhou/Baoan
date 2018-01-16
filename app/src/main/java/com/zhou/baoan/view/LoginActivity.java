@@ -150,11 +150,19 @@ public class LoginActivity extends BaseActivity {
                     Log.d(TAG, "callBack: " + result.toString());
                     String login = result.toString();
                     String substring = login.substring(44);
-                    if (substring.contains("ok")) {
+                    if (substring.contains("OK")) {
                         SpUtil.putObject(LoginActivity.this,Constant.UserBean,userBean);
+                        SpUtil.putString(LoginActivity.this,"isok","OK");//保存ok
                         TwoLogin(etUser);
                         return;
-                    } else if (substring.contains("fail")) {
+                    }
+                    else if (substring.contains("ok")) {
+                        SpUtil.putObject(LoginActivity.this,Constant.UserBean,userBean);
+                        SpUtil.putString(LoginActivity.this,"isok","ok");//保存ok
+                        TwoLogin(etUser);
+                        return;
+                    }
+                    else if (substring.contains("fail")) {
                         ToastUtil.show(getApplicationContext(), "密码错误");
                         dialog.dismiss();
                         return;
