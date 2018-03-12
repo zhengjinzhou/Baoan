@@ -96,6 +96,7 @@ public class LoginActivity extends BaseActivity {
             et_user.setText(userBean.getUser());
             et_psd.setText(userBean.getPsd());
         }
+
     }
 
 
@@ -150,6 +151,7 @@ public class LoginActivity extends BaseActivity {
                     Log.d(TAG, "callBack: " + result.toString());
                     String login = result.toString();
                     String substring = login.substring(44);
+                    Log.d(TAG, "callBack: "+substring);
                     if (substring.contains("OK")) {
                         SpUtil.putObject(LoginActivity.this,Constant.UserBean,userBean);
                         SpUtil.putString(LoginActivity.this,"isok","OK");//保存ok

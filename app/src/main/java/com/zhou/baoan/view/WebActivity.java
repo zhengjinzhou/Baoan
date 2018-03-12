@@ -1,7 +1,11 @@
 package com.zhou.baoan.view;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -74,8 +78,29 @@ public class WebActivity extends BaseActivity {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             // 消耗掉这个事件。Android中返回True的即到此为止吧,事件就会不会冒泡传递了，我们称之为消耗掉
             // 使用自己的WebView组件来响应Url加载事件，而不是使用默认浏览器器加载页面
-            webView.loadUrl(url);
-            return false;
+            Log.e("用户单击超连接", url);
+            //判断用户单击的是那个超连接
+            String tag = "tel";
+            if (url.contains(tag)) {
+                String mobile = url.substring(url.lastIndexOf("/") + 1);
+                Log.e("mobile----------->",mobile);
+                Intent mIntent = new Intent(Intent.ACTION_CALL);
+                Uri data = Uri.parse(mobile);
+                mIntent.setData(data);
+                //Android6.0以后的动态获取打电话权限
+                if (ActivityCompat.checkSelfPermission(WebActivity.this, android.Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                    startActivity(mIntent);
+                    //这个超连接,java已经处理了，webview不要处理
+                    return true;
+                }else{
+                    //申请权限
+                    ActivityCompat.requestPermissions(WebActivity.this, new String[]{Manifest.permission.CALL_PHONE},1);
+                    return true;
+                }
+            }else {
+                webView.loadUrl(url);
+            }
+            return true;
         }
 
         @Override
