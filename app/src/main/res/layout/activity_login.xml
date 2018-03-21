@@ -12,9 +12,10 @@
         android:paddingTop="?attr/actionBarSize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/login_logo" />
+        android:src="@mipmap/logo" />
 
     <TextView
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -25,6 +26,7 @@
         android:textStyle="bold" />
 
     <TextView
+        android:layout_marginBottom="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -34,6 +36,7 @@
         android:textSize="20sp" />
 
     <TextView
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

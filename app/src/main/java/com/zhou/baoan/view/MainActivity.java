@@ -18,6 +18,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.DownloadListener;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -99,15 +100,35 @@ public class MainActivity extends BaseActivity {
      * webView的设置
      */
     private void initWeb() {
-        String new_url = getIntent().getStringExtra(Constant.NEW_URL);
+        String new_url = getIntent().getStringExtra(Constant.NEW_URL)+"&OpenType=capital_index";
         Log.d(TAG, "initWeb: "+new_url);
         webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setJavaScriptEnabled(true);//加载JavaScript
         webView.setWebViewClient(mWebViewClient);//这个一定要设置，要不然不会再本应用中加载
         webView.setWebChromeClient(mWebChromeClient);
+        webView.getSettings().setSupportZoom(true);
         webView.loadUrl(new_url);
 
+        webView.setDownloadListener(new MyWebViewDownLoadListener());
+
+    }
+
+    /**
+     * 如果要实现文件下载的功能，需要设置WebView的DownloadListener，通过实现自己的DownloadListener来实现文件的下载
+     */
+    private class MyWebViewDownLoadListener implements DownloadListener {
+        @Override
+        public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+            Log.i("tag", "url="+url);
+            Log.i("tag", "userAgent="+userAgent);
+            Log.i("tag", "contentDisposition="+contentDisposition);
+            Log.i("tag", "mimetype="+mimetype);
+            Log.i("tag", "contentLength="+contentLength);
+            Uri uri = Uri.parse(url);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        }
     }
 
     /**
@@ -121,9 +142,14 @@ public class MainActivity extends BaseActivity {
         tv_index.setCompoundDrawables(null, img, null, null); //设置左图标
     }
 
-    @OnClick({R.id.tv_sum, R.id.tv_index, R.id.tv_map, R.id.tv_center,R.id.iv_login})
+    @OnClick({R.id.ivHome,R.id.tv_sum, R.id.tv_index, R.id.tv_map, R.id.tv_center,R.id.iv_login})
     void onClick(View view) {
         switch (view.getId()) {
+            case R.id.ivHome:
+                for(int i=0;i<30;i++){
+                    webView.goBack();
+                }
+                break;
             case R.id.iv_login:
                 newDialog();
                 break;

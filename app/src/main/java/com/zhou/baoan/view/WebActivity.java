@@ -6,9 +6,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
+import android.webkit.DownloadListener;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -42,7 +41,7 @@ public class WebActivity extends BaseActivity {
     }
     @Override
     public void init() {
-        String toUrl = getIntent().getStringExtra(Constant.NEW_URL);
+        String toUrl = getIntent().getStringExtra(Constant.NEW_URL) + "&OpenType=capital_index";
         Log.d(TAG, "------------------------------init: "+toUrl);
 
         webView.getSettings().setUseWideViewPort(true);
@@ -51,6 +50,24 @@ public class WebActivity extends BaseActivity {
         webView.setWebViewClient(mWebViewClient);//这个一定要设置，要不然不会再本应用中加载
         webView.setWebChromeClient(mWebChromeClient);
         webView.loadUrl(toUrl);
+        webView.setDownloadListener(new MyWebViewDownLoadListener());
+    }
+
+    /**
+     * 如果要实现文件下载的功能，需要设置WebView的DownloadListener，通过实现自己的DownloadListener来实现文件的下载
+     */
+    private class MyWebViewDownLoadListener implements DownloadListener {
+        @Override
+        public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+            Log.i("tag", "url="+url);
+            Log.i("tag", "userAgent="+userAgent);
+            Log.i("tag", "contentDisposition="+contentDisposition);
+            Log.i("tag", "mimetype="+mimetype);
+            Log.i("tag", "contentLength="+contentLength);
+            Uri uri = Uri.parse(url);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        }
     }
 
     //ChromeClient   监听网页加载

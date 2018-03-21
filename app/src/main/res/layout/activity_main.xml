@@ -15,12 +15,12 @@
             android:layout_height="?attr/actionBarSize">
 
             <ImageView
-                android:visibility="gone"
-                android:id="@+id/iv_back"
-                android:layout_width="44dp"
-                android:layout_height="20dp"
+                android:padding="16dp"
+                android:id="@+id/ivHome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:src="@drawable/bar_back_white" />
+                android:src="@drawable/home" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -50,6 +50,7 @@
         android:layout_below="@+id/appbar" />
 
     <include
+        android:visibility="gone"
         android:id="@+id/layout"
         layout="@layout/layout_bottom"
         android:layout_width="match_parent"

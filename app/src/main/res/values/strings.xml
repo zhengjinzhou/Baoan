@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">宝安工务局</string>
+    <string name="app_name">勤智资本</string>
 
-    <string name="head_title">深圳市宝安区建筑工务局</string>
-    <string name="head_content">工程档案数据管理平台</string>
+    <string name="head_title">勤智资本</string>
+    <string name="head_content">投资数据管理平台</string>
     <string name="eim">(EIM)</string>
     <string name="app">wanvebotong</string>
 </resources>
