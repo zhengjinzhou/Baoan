@@ -1,8 +1,7 @@
 <resources>
-    <string name="app_name">勤智资本</string>
-
-    <string name="head_title">勤智资本</string>
-    <string name="head_content">投资数据管理平台</string>
+    <string name="app_name">盐田水务工程</string>
+    <string name="head_title">盐田环水局工程数据管理平台</string>
+    <string name="head_content">盐田环水局工程数据管理平台</string>
     <string name="eim">(EIM)</string>
     <string name="app">wanvebotong</string>
 </resources>
