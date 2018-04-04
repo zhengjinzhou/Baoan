@@ -10,8 +10,8 @@
 
     <ImageView
         android:paddingTop="?attr/actionBarSize"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="88dp"
+        android:layout_height="108dp"
         android:src="@mipmap/logo" />
 
     <TextView

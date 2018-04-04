@@ -14,6 +14,7 @@ public class Constant {
      *
      * 深圳蓝田 序列号：ysmi8nF7R3L/64UB2oGK4d7kx3kgvJ4PF2Uwk7k3jLeN1U1O+clGj7Jm0EFZLzYPaJ512P+SE3I=    IP地址：http://121.15.203.82:9130
      *
+     * 南山工务局 序列号：8PDuOH1Qql6d0t3CpZGKjmZv3cVzOviVfg+TRCIeJ2wt54AO0hBUcJk49db2CFY2QOOMyv2ih0E=   地址：183.62.232.185:8011
      */
     public static final String BASE_URL = "http://121.15.203.82:9130";
     public static final String NEW_URL = "new_url";

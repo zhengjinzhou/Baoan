@@ -61,6 +61,9 @@ public class LoginActivity extends BaseActivity {
 
         initCheckBox();
         initInfo();
+
+        et_user.setText("18026318828");
+        et_psd.setText("18026318828");
     }
 
     //勾选框逻辑

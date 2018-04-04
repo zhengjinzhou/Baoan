@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">盐田水务工程</string>
-    <string name="head_title">盐田环水局工程数据管理平台</string>
-    <string name="head_content">盐田环水局工程数据管理平台</string>
+    <string name="app_name">南山工务局</string>
+    <string name="head_title">南山工务局</string>
+    <string name="head_content">南山工务局</string>
     <string name="eim">(EIM)</string>
     <string name="app">wanvebotong</string>
 </resources>

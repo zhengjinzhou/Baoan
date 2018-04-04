@@ -33,11 +33,14 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.DownloadListener;
 import android.webkit.JsResult;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
@@ -76,11 +79,16 @@ public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
     @BindView(R.id.tv_index)
     TextView tv_index;
-    @BindView(R.id.tv_map) TextView tv_map;
-    @BindView(R.id.tv_sum) TextView tv_sum;
-    @BindView(R.id.tv_center) TextView tv_center;
-    @BindView(R.id.webView) WebView webView;
-    @BindView(R.id.ll) LinearLayout ll;
+    @BindView(R.id.tv_map)
+    TextView tv_map;
+    @BindView(R.id.tv_sum)
+    TextView tv_sum;
+    @BindView(R.id.tv_center)
+    TextView tv_center;
+    @BindView(R.id.webView)
+    WebView webView;
+    @BindView(R.id.ll)
+    LinearLayout ll;
 
     private String websession;
     private String[] brief_url;
@@ -99,7 +107,7 @@ public class MainActivity extends BaseActivity {
     public void init() {
         //判断
         String isok = SpUtil.getString(MainActivity.this, "isok", "");
-        if (isok.equals("ok")){
+        if (isok.equals("ok")) {
             tv_map.setVisibility(View.GONE);
             ll.setVisibility(View.GONE);
         }
@@ -110,6 +118,7 @@ public class MainActivity extends BaseActivity {
 
     /**
      * 跳转
+     *
      * @param context
      * @param url
      * @return
@@ -125,33 +134,43 @@ public class MainActivity extends BaseActivity {
      */
     private void initWeb() {
         String new_url = getIntent().getStringExtra(Constant.NEW_URL);
-        Log.d(TAG, "initWeb: "+new_url);
+        Log.d(TAG, "initWeb: " + new_url);
         webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setJavaScriptEnabled(true);//加载JavaScript
         webView.setWebViewClient(mWebViewClient);//这个一定要设置，要不然不会再本应用中加载
         webView.setWebChromeClient(mWebChromeClient);
         webView.getSettings().setSupportZoom(true);
+        //清除缓存
+        webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        this.deleteDatabase("WebView.db");
+        this.deleteDatabase("WebViewCache.db");
+        webView.clearCache(true);
+        webView.clearFormData();
+        getCacheDir().delete();
+
         webView.loadUrl(new_url);
         webView.setDownloadListener(new MyWebViewDownLoadListener());
-        webView.setWebChromeClient(new WebChromeClient(){
+        webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
-                mUploadCallbackAboveL=filePathCallback;
+                mUploadCallbackAboveL = filePathCallback;
                 take();
                 return true;
             }
 
             public void openFileChooser(ValueCallback<Uri> uploadMsg) {
-                mUploadMessage=uploadMsg;
+                mUploadMessage = uploadMsg;
                 take();
             }
-            public void openFileChooser(ValueCallback<Uri> uploadMsg,String acceptType) {
-                mUploadMessage=uploadMsg;
+
+            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
+                mUploadMessage = uploadMsg;
                 take();
             }
-            public void openFileChooser(ValueCallback<Uri> uploadMsg,String acceptType, String capture) {
-                mUploadMessage=uploadMsg;
+
+            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
+                mUploadMessage = uploadMsg;
                 take();
             }
         });
@@ -159,14 +178,14 @@ public class MainActivity extends BaseActivity {
 
     private void take() {
 
-        if(ContextCompat.checkSelfPermission(MainActivity.this,
-                android.Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]{android.Manifest.permission.CAMERA},0);
-        }else {
+                    new String[]{android.Manifest.permission.CAMERA}, 0);
+        } else {
             File imageStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "MyApp");
             // Create the storage directory if it does not exist
-            if (! imageStorageDir.exists()){
+            if (!imageStorageDir.exists()) {
                 imageStorageDir.mkdirs();
             }
             File file = new File(imageStorageDir + File.separator + "IMG_" + String.valueOf(System.currentTimeMillis()) + ".jpg");
@@ -176,7 +195,7 @@ public class MainActivity extends BaseActivity {
             final Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             final PackageManager packageManager = getPackageManager();
             final List<ResolveInfo> listCam = packageManager.queryIntentActivities(captureIntent, 0);
-            for(ResolveInfo res : listCam) {
+            for (ResolveInfo res : listCam) {
                 final String packageName = res.activityInfo.packageName;
                 final Intent i = new Intent(captureIntent);
                 i.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
@@ -188,21 +207,21 @@ public class MainActivity extends BaseActivity {
             Intent i = new Intent(Intent.ACTION_GET_CONTENT);
             i.addCategory(Intent.CATEGORY_OPENABLE);
             i.setType("image/*");
-            Intent chooserIntent = Intent.createChooser(i,"Image Chooser");
+            Intent chooserIntent = Intent.createChooser(i, "Image Chooser");
             chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[]{}));
-            MainActivity.this.startActivityForResult(chooserIntent,  FILECHOOSER_RESULTCODE);
+            MainActivity.this.startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,String[] permissions,int[] grantResults) {
-        switch (requestCode){
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
             case 0:
-                if (grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //这里已经获取到了摄像头的权限，想干嘛干嘛了可以
                     File imageStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "MyApp");
                     // Create the storage directory if it does not exist
-                    if (! imageStorageDir.exists()){
+                    if (!imageStorageDir.exists()) {
                         imageStorageDir.mkdirs();
                     }
                     File file = new File(imageStorageDir + File.separator + "IMG_" + String.valueOf(System.currentTimeMillis()) + ".jpg");
@@ -212,7 +231,7 @@ public class MainActivity extends BaseActivity {
                     final Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     final PackageManager packageManager = getPackageManager();
                     final List<ResolveInfo> listCam = packageManager.queryIntentActivities(captureIntent, 0);
-                    for(ResolveInfo res : listCam) {
+                    for (ResolveInfo res : listCam) {
                         final String packageName = res.activityInfo.packageName;
                         final Intent i = new Intent(captureIntent);
                         i.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
@@ -224,12 +243,12 @@ public class MainActivity extends BaseActivity {
                     Intent i = new Intent(Intent.ACTION_GET_CONTENT);
                     i.addCategory(Intent.CATEGORY_OPENABLE);
                     i.setType("image/*");
-                    Intent chooserIntent = Intent.createChooser(i,"Image Chooser");
+                    Intent chooserIntent = Intent.createChooser(i, "Image Chooser");
                     chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[]{}));
-                    MainActivity.this.startActivityForResult(chooserIntent,  FILECHOOSER_RESULTCODE);
-                }else {
+                    MainActivity.this.startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
+                } else {
                     //这里是拒绝给APP摄像头权限，给个提示什么的说明一下都可以。
-                    Toast.makeText(MainActivity.this,"请手动打开相机权限",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "请手动打开相机权限", Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
@@ -344,21 +363,17 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==FILECHOOSER_RESULTCODE)
-        {
+        if (requestCode == FILECHOOSER_RESULTCODE) {
             if (null == mUploadMessage && null == mUploadCallbackAboveL) return;
             Uri result = data == null || resultCode != RESULT_OK ? null : data.getData();
             if (mUploadCallbackAboveL != null) {
                 onActivityResultAboveL(requestCode, resultCode, data);
-            }
-            else  if (mUploadMessage != null) {
+            } else if (mUploadMessage != null) {
 
                 if (result != null) {
-                    String path = getPath(getApplicationContext(),
-                            result);
+                    String path = getPath(getApplicationContext(), result);
                     Uri uri = Uri.fromFile(new File(path));
-                    mUploadMessage
-                            .onReceiveValue(uri);
+                    mUploadMessage.onReceiveValue(uri);
                 } else {
                     mUploadMessage.onReceiveValue(imageUri);
                 }
@@ -398,10 +413,10 @@ public class MainActivity extends BaseActivity {
                     results = new Uri[]{Uri.parse(dataString)};
             }
         }
-        if(results!=null){
+        if (results != null) {
             mUploadCallbackAboveL.onReceiveValue(results);
             mUploadCallbackAboveL = null;
-        }else{
+        } else {
             results = new Uri[]{imageUri};
             mUploadCallbackAboveL.onReceiveValue(results);
             mUploadCallbackAboveL = null;
@@ -417,11 +432,11 @@ public class MainActivity extends BaseActivity {
     private class MyWebViewDownLoadListener implements DownloadListener {
         @Override
         public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-            Log.i("tag", "url="+url);
-            Log.i("tag", "userAgent="+userAgent);
-            Log.i("tag", "contentDisposition="+contentDisposition);
-            Log.i("tag", "mimetype="+mimetype);
-            Log.i("tag", "contentLength="+contentLength);
+            Log.i("tag", "url=" + url);
+            Log.i("tag", "userAgent=" + userAgent);
+            Log.i("tag", "contentDisposition=" + contentDisposition);
+            Log.i("tag", "mimetype=" + mimetype);
+            Log.i("tag", "contentLength=" + contentLength);
             Uri uri = Uri.parse(url);
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
@@ -439,11 +454,11 @@ public class MainActivity extends BaseActivity {
         tv_index.setCompoundDrawables(null, img, null, null); //设置左图标
     }
 
-    @OnClick({R.id.ivHome,R.id.tv_sum, R.id.tv_index, R.id.tv_map, R.id.tv_center,R.id.iv_login})
+    @OnClick({R.id.ivHome, R.id.tv_sum, R.id.tv_index, R.id.tv_map, R.id.tv_center, R.id.iv_login})
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.ivHome:
-                for(int i=0;i<30;i++){
+                for (int i = 0; i < 30; i++) {
                     webView.goBack();
                 }
                 break;
@@ -452,8 +467,8 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.tv_index:
                 //startActivity(WebActivity.newIntent(this, "http://121.15.203.82:9210/WAN_MPDA_Pic/PageMain/ProjectList.aspx"));
-                for (int i=0;i<20;i++){
-                    if (webView.canGoBack()){
+                for (int i = 0; i < 20; i++) {
+                    if (webView.canGoBack()) {
                         webView.goBack();
                     }
                 }
@@ -479,7 +494,7 @@ public class MainActivity extends BaseActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         AlertDialog dialog = builder.create();
         View inflate = LayoutInflater.from(this).inflate(R.layout.dialog_new, null);
-        dialog.setView(inflate,0,0,0,0);
+        dialog.setView(inflate, 0, 0, 0, 0);
         dialog.show();
         inflate.findViewById(R.id.tv_signout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -516,13 +531,13 @@ public class MainActivity extends BaseActivity {
         pop.setOutsideTouchable(true);
         pop.setAnimationStyle(R.anim.mypop_anim);
         //pop.showAsDropDown(tv_center, Gravity.TOP, 0);
-        pop.showAtLocation(tv_sum,Gravity.BOTTOM,tv_sum.getWidth()*2,tv_center.getWidth());
+        pop.showAtLocation(tv_sum, Gravity.BOTTOM, tv_sum.getWidth() * 2, tv_center.getWidth());
 
         //内部资料
         contentView.findViewById(R.id.tv_reference_private).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: "+brief_url[1]);
+                Log.d(TAG, "onClick: " + brief_url[1]);
                 TwoLogin(brief_url[1]);
                 pop.dismiss();
             }
@@ -531,7 +546,7 @@ public class MainActivity extends BaseActivity {
         contentView.findViewById(R.id.tv_book).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: "+brief_url[2]);
+                Log.d(TAG, "onClick: " + brief_url[2]);
                 TwoLogin(brief_url[2]);
                 pop.dismiss();
             }
@@ -575,7 +590,7 @@ public class MainActivity extends BaseActivity {
         pop.setBackgroundDrawable(new BitmapDrawable());
         pop.setOutsideTouchable(true);
         pop.setAnimationStyle(R.anim.mypop_anim);
-        pop.showAtLocation(tv_center,Gravity.BOTTOM,tv_center.getHeight(),tv_center.getWidth());
+        pop.showAtLocation(tv_center, Gravity.BOTTOM, tv_center.getHeight(), tv_center.getWidth());
         //按项目状态
         contentView.findViewById(R.id.tv_pro_stat).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -632,6 +647,7 @@ public class MainActivity extends BaseActivity {
      * 第二次验证登录
      * <p>
      * 验证服务器是否变更
+     *
      * @param s
      */
     private void TwoLogin(final String s) {
@@ -644,7 +660,7 @@ public class MainActivity extends BaseActivity {
                 "<REQUEST>" +
                 "<SP_ID>ToEIM_PIC</SP_ID>" +
                 "<PASSWORD>" + psw + "</PASSWORD>" +
-                "<USER>"+username+"</USER>" +
+                "<USER>" + username + "</USER>" +
                 "</REQUEST>";
         Request request = new Request.Builder().url(Constant.ssoUrl)
                 .post(RequestBody.create(MEDIA_TYPE_MARKDOWN, strXML)).build();
@@ -659,7 +675,7 @@ public class MainActivity extends BaseActivity {
                 String string = response.body().string();
                 Log.d(TAG, "onResponse: 第二次登录成功" + string);
                 try {
-                    parseXMLWithPull(string,s);//对xml的解析
+                    parseXMLWithPull(string, s);//对xml的解析
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -673,7 +689,7 @@ public class MainActivity extends BaseActivity {
      * @param xmlData
      * @throws Exception
      */
-    public void parseXMLWithPull(String xmlData,String s) throws Exception {
+    public void parseXMLWithPull(String xmlData, String s) throws Exception {
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
         XmlPullParser parser = factory.newPullParser();
         parser.setInput(new StringReader(xmlData));
@@ -758,7 +774,7 @@ public class MainActivity extends BaseActivity {
             String tag = "tel";
             if (url.contains(tag)) {
                 String mobile = url.substring(url.lastIndexOf("/") + 1);
-                Log.e("mobile----------->",mobile);
+                Log.e("mobile----------->", mobile);
                 Intent mIntent = new Intent(Intent.ACTION_CALL);
                 Uri data = Uri.parse(mobile);
                 mIntent.setData(data);
@@ -767,12 +783,12 @@ public class MainActivity extends BaseActivity {
                     startActivity(mIntent);
                     //这个超连接,java已经处理了，webview不要处理
                     return true;
-                }else{
+                } else {
                     //申请权限
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CALL_PHONE},1);
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CALL_PHONE}, 1);
                     return true;
                 }
-            }else {
+            } else {
                 webView.loadUrl(url);
             }
             return true;
@@ -788,14 +804,14 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()){
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
             webView.goBack();
-        }else if (keyCode == KeyEvent.KEYCODE_BACK){
+        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             long secondTime = System.currentTimeMillis();
-            if (secondTime - firstTime > 2000){
-                ToastUtil.show(getApplicationContext(),"再按一次退出程序");
+            if (secondTime - firstTime > 2000) {
+                ToastUtil.show(getApplicationContext(), "再按一次退出程序");
                 firstTime = secondTime;
-            }else {
+            } else {
                 finish();
             }
         }
@@ -805,9 +821,19 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (webView != null){
+        if (webView != null) {
             webView.destroy();
         }
+        //清空所有Cookie
+        CookieSyncManager.createInstance(this);  //Create a singleton CookieSyncManager within a context
+        CookieManager cookieManager = CookieManager.getInstance(); // the singleton CookieManager instance
+        cookieManager.removeAllCookie();// Removes all cookies.
+        CookieSyncManager.getInstance().sync(); // forces sync manager to sync now
+
+        webView.setWebChromeClient(null);
+        webView.setWebViewClient(null);
+        webView.getSettings().setJavaScriptEnabled(false);
+        webView.clearCache(true);
     }
 }
 

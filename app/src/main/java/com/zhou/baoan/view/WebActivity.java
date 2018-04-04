@@ -20,10 +20,13 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.DownloadListener;
 import android.webkit.JsResult;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -72,6 +75,14 @@ public class WebActivity extends BaseActivity {
         webView.getSettings().setJavaScriptEnabled(true);//加载JavaScript
         webView.setWebViewClient(mWebViewClient);//这个一定要设置，要不然不会再本应用中加载
         webView.setWebChromeClient(mWebChromeClient);
+        //清除缓存
+        webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        this.deleteDatabase("WebView.db");
+        this.deleteDatabase("WebViewCache.db");
+        webView.clearCache(true);
+        webView.clearFormData();
+        getCacheDir().delete();
+
         webView.loadUrl(toUrl);
         webView.setDownloadListener(new MyWebViewDownLoadListener());
         webView.setWebChromeClient(new WebChromeClient(){
@@ -369,5 +380,20 @@ public class WebActivity extends BaseActivity {
         public void onPageFinished(WebView view, String url) {
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //清空所有Cookie
+        CookieSyncManager.createInstance(this);  //Create a singleton CookieSyncManager within a context
+        CookieManager cookieManager = CookieManager.getInstance(); // the singleton CookieManager instance
+        cookieManager.removeAllCookie();// Removes all cookies.
+        CookieSyncManager.getInstance().sync(); // forces sync manager to sync now
+
+        webView.setWebChromeClient(null);
+        webView.setWebViewClient(null);
+        webView.getSettings().setJavaScriptEnabled(false);
+        webView.clearCache(true);
+    }
 }
 
